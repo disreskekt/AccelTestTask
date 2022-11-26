@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AccelTestTask.Repositories;
+using AccelTestTask.Repositories.Interfaces;
+using AccelTestTask.Services;
+using AccelTestTask.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace AccelTestTask
@@ -33,6 +30,9 @@ namespace AccelTestTask
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "AccelTestTask", Version = "v1"});
             });
             services.AddDbContext<DataContext>(options => options.UseNpgsql(this.Configuration.GetConnectionString("AccelDb")));
+
+            services.AddScoped<IShortLinkRepository, ShortLinkRepository>();
+            services.AddScoped<IShortLinkService, ShortLinkService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

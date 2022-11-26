@@ -1,4 +1,4 @@
-﻿namespace AccelTestTask;
+﻿namespace AccelTestTask.Models;
 
 public class ShortLink
 {

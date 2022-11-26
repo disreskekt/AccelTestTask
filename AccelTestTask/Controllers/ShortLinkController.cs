@@ -1,19 +1,20 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
+using AccelTestTask.Exceptions;
+using AccelTestTask.Models;
+using AccelTestTask.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AccelTestTask.Controllers;
 
 [ApiController]
 public class ShortLinkController : ControllerBase
 {
-    private readonly DataContext _db;
+    private readonly IShortLinkService _shortLinkService;
 
-    public ShortLinkController(DataContext dataContext)
+    public ShortLinkController(IShortLinkService shortLinkService)
     {
-        _db = dataContext;
+        _shortLinkService = shortLinkService;
     }
 
     [HttpPost]
@@ -23,36 +24,10 @@ public class ShortLinkController : ControllerBase
         try
         {
             //url validation
-            
-            ShortLink? shortLink = await _db.Tokens.FirstOrDefaultAsync(tkn => tkn.Link == url);
-            
-            if (shortLink is not null)
-            {
-                return Ok(shortLink.Token);
-            }
-            
-            string newToken = $"{url.GetHashCode():X}";
-            
-            while (true)
-            {
-                shortLink = await _db.Tokens.FirstOrDefaultAsync(tkn => tkn.Token == newToken);
 
-                if (shortLink is null)
-                {
-                    break;
-                }
-                
-                newToken = $"{(url + DateTime.Now.ToString(CultureInfo.InvariantCulture)).GetHashCode():X}";
-            }
-            
-            _db.Tokens.Add(new ShortLink()
-            {
-                Link = url,
-                Token = newToken
-            });
-            await _db.SaveChangesAsync();
-            
-            return Ok(newToken);
+            string token = await _shortLinkService.GenerateToken(url);
+
+            return Ok(token);
         }
         catch (Exception e)
         {
@@ -66,14 +41,13 @@ public class ShortLinkController : ControllerBase
     {
         try
         {
-            ShortLink? shortLink = await _db.Tokens.FirstOrDefaultAsync(tkn => tkn.Token == token);
-
-            if (shortLink is null)
-            {
-                return NotFound();
-            }
-
+            ShortLink shortLink = await _shortLinkService.GoTo(token);
+            
             return Redirect(shortLink.Link);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
         }
         catch (Exception e)
         {

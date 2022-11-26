@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AccelTestTask.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AccelTestTask;
 
@@ -8,6 +9,5 @@ public class DataContext : DbContext
     
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        
     }
 }

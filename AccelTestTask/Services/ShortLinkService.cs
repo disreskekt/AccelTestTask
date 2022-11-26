@@ -16,16 +16,24 @@ public class ShortLinkService : IShortLinkService
         _repository = repository;
     }
 
-    public async Task<string> GenerateToken(string url)
+    public void ValidateUri(string uri)
     {
-        ShortLink? shortLink = await _repository.FirstOrDefaultAsync(tkn => tkn.Link == url);
+        if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+        {
+            throw new UriFormatException("Wrong uri format");
+        }
+    }
+    
+    public async Task<string> GenerateToken(string uri)
+    {
+        ShortLink? shortLink = await _repository.FirstOrDefaultAsync(tkn => tkn.Link == uri);
             
         if (shortLink is not null)
         {
             return shortLink.Token;
         }
             
-        string newToken = $"{url.GetHashCode():X}";
+        string newToken = $"{uri.GetHashCode():X}";
             
         while (true)
         {
@@ -36,12 +44,12 @@ public class ShortLinkService : IShortLinkService
                 break;
             }
                 
-            newToken = $"{(url + Guid.NewGuid()).GetHashCode():X}";
+            newToken = $"{(uri + Guid.NewGuid()).GetHashCode():X}";
         }
             
         _repository.Add(new ShortLink()
         {
-            Link = url,
+            Link = uri,
             Token = newToken
         });
         await _repository.SaveChangesAsync();

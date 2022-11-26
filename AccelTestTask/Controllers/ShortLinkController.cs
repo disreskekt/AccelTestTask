@@ -19,13 +19,13 @@ public class ShortLinkController : ControllerBase
 
     [HttpPost]
     [Route("[controller]/[action]")]
-    public async Task<IActionResult> GenerateToken([FromQuery] string url)
+    public async Task<IActionResult> GenerateToken([FromQuery] string uri)
     {
         try
         {
-            //url validation
+            _shortLinkService.ValidateUri(uri);
 
-            string token = await _shortLinkService.GenerateToken(url);
+            string token = await _shortLinkService.GenerateToken(uri);
 
             return Ok(token);
         }

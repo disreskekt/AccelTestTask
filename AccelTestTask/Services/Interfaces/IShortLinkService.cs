@@ -5,6 +5,7 @@ namespace AccelTestTask.Services.Interfaces;
 
 public interface IShortLinkService
 {
-    public Task<string> GenerateToken(string url);
+    public void ValidateUri(string uri);
+    public Task<string> GenerateToken(string uri);
     public Task<ShortLink> GoTo(string token);
 }

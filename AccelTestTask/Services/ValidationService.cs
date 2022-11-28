@@ -22,7 +22,7 @@ public class ValidationService : IValidationService
                out int _))
         {
 
-            throw new ValidationException();
+            throw new ValidationException("Wrong token format");
         }
     }
 }

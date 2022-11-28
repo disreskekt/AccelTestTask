@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AccelTestTask.Exceptions;
 using AccelTestTask.Helpers;
 using AccelTestTask.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,10 @@ public class QrController : ControllerBase
             byte[] qrBytes = await System.IO.File.ReadAllBytesAsync(ConstantHelper.QrPath + guid);
             
             return File(qrBytes, "image/jpeg");
+        }
+        catch (UriFormatException e)
+        {
+            return ValidationProblem(e.Message);
         }
         catch (Exception e)
         {

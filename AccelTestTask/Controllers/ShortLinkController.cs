@@ -31,6 +31,10 @@ public class ShortLinkController : ControllerBase
 
             return Ok(token);
         }
+        catch (UriFormatException e)
+        {
+            return ValidationProblem(e.Message);
+        }
         catch (Exception e)
         {
             return BadRequest(e.Message);
@@ -44,14 +48,18 @@ public class ShortLinkController : ControllerBase
         try
         {
             _validationService.ValidateToken(token);
-            
+
             ShortLink shortLink = await _shortLinkService.GoTo(token);
-            
+
             return Redirect(shortLink.Link);
         }
         catch (NotFoundException)
         {
             return NotFound();
+        }
+        catch (ValidationException e)
+        {
+            return ValidationProblem(e.Message);
         }
         catch (Exception e)
         {

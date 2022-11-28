@@ -13,6 +13,6 @@ public interface IShortLinkRepository
     public Task<ShortLink?> FirstOrDefaultAsync(Expression<Func<ShortLink, bool>> predicate);
     public void Add(ShortLink todoItem);
     public void Remove(ShortLink todoItem);
-    public Task<bool> AnyAsync(int id);
+    public Task<bool> AnyAsync(Expression<Func<ShortLink, bool>> predicate);
     public Task SaveChangesAsync();
 }

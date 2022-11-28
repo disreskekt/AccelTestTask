@@ -15,14 +15,6 @@ public class ShortLinkService : IShortLinkService
     {
         _repository = repository;
     }
-
-    public void ValidateUri(string uri)
-    {
-        if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-        {
-            throw new UriFormatException("Wrong uri format");
-        }
-    }
     
     public async Task<string> GenerateToken(string uri)
     {
@@ -67,5 +59,10 @@ public class ShortLinkService : IShortLinkService
         }
 
         return shortLink;
+    }
+
+    public async Task<bool> Exists(string token)
+    {
+        return await _repository.AnyAsync(link => link.Token == token);
     }
 }

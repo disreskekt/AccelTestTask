@@ -9,10 +9,14 @@ namespace AccelTestTask.Controllers;
 public class QrController : ControllerBase
 {
     private readonly IQrService _qrService;
+    private readonly IShortLinkService _shortLinkService;
+    private readonly IValidationService _validationService;
 
-    public QrController(IQrService qrService)
+    public QrController(IQrService qrService, IShortLinkService shortLinkService, IValidationService validationService)
     {
         _qrService = qrService;
+        _shortLinkService = shortLinkService;
+        _validationService = validationService;
     }
     
     [HttpGet]
@@ -22,10 +26,17 @@ public class QrController : ControllerBase
         Guid guid = Guid.Empty;
         try
         {
+            _validationService.ValidateUri(link);
+            
+            if (!await _shortLinkService.Exists(link.RetrieveToken()))
+            {
+                return NoContent();
+            }
+            
             guid = _qrService.GenerateQr(link);
-
+            
             byte[] qrBytes = await System.IO.File.ReadAllBytesAsync(ConstantHelper.QrPath + guid);
-
+            
             return File(qrBytes, "image/jpeg");
         }
         catch (Exception e)

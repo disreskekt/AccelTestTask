@@ -11,10 +11,12 @@ namespace AccelTestTask.Controllers;
 public class ShortLinkController : ControllerBase
 {
     private readonly IShortLinkService _shortLinkService;
+    private readonly IValidationService _validationService;
 
-    public ShortLinkController(IShortLinkService shortLinkService)
+    public ShortLinkController(IShortLinkService shortLinkService, IValidationService validationService)
     {
         _shortLinkService = shortLinkService;
+        _validationService = validationService;
     }
 
     [HttpPost]
@@ -23,7 +25,7 @@ public class ShortLinkController : ControllerBase
     {
         try
         {
-            _shortLinkService.ValidateUri(uri);
+            _validationService.ValidateUri(uri);
 
             string token = await _shortLinkService.GenerateToken(uri);
 
@@ -41,6 +43,8 @@ public class ShortLinkController : ControllerBase
     {
         try
         {
+            _validationService.ValidateToken(token);
+            
             ShortLink shortLink = await _shortLinkService.GoTo(token);
             
             return Redirect(shortLink.Link);

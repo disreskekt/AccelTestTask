@@ -42,9 +42,9 @@ public class ShortLinkRepository : IShortLinkRepository
         _context.Tokens.Remove(todoItem);
     }
 
-    public async Task<bool> AnyAsync(int id)
+    public async Task<bool> AnyAsync(Expression<Func<ShortLink, bool>> predicate)
     {
-        return await _context.Tokens.AnyAsync(e => e.Id == id);
+        return await _context.Tokens.AnyAsync(predicate);
     }
 
     public async Task SaveChangesAsync()

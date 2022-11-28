@@ -34,6 +34,7 @@ namespace AccelTestTask
             services.AddScoped<IShortLinkRepository, ShortLinkRepository>();
             services.AddScoped<IShortLinkService, ShortLinkService>();
             services.AddScoped<IQrService, QrService>();
+            services.AddScoped<IValidationService, ValidationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
